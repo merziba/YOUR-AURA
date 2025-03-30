@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quel Animal Êtes-Vous ?</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2e8b57;
+    }
+    .question {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      display: none;
+    }
+    .question.active {
+      display: block;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin: 8px 0;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #result {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #e8f5e9;
+      border-radius: 8px;
+    }
+    .animal {
+      font-size: 80px;
+      margin: 20px;
+    }
+    #progress {
+      margin: 15px 0;
+      height: 8px;
+      background: #ddd;
+      border-radius: 5px;
+    }
+    #progress-bar {
+      height: 100%;
+      background: #2e8b57;
+      width: 0%;
+      border-radius: 5px;
+      transition: width 0.3s;
+    }
+    .traits {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quel Animal Correspond à Votre Personnalité ?</h1>
+    <div id="progress">
+      <div id="progress-bar"></div>
+    </div>
+    
+    <div id="quiz">
+      <!-- Question 1 -->
+      <div class="question active" id="q1">
+        <h3>1. Quand il y a un problème, je :</h3>
+        <button onclick="nextQuestion(5)">Je réfléchis seul dans mon coin</button>
+        <button onclick="nextQuestion(8)">Je prends les choses en main</button>
+        <button onclick="nextQuestion(2)">Je demande conseil à mes amis</button>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="question" id="q2">
+        <h3>2. Ce qui m'inquiète le plus :</h3>
+        <button onclick="nextQuestion(6)">Quand je ne sais pas à quoi m'attendre</button>
+        <button onclick="nextQuestion(3)">De ne pas réussir ce que j'entreprends</button>
+        <button onclick="nextQuestion(9)">Les disputes autour de moi</button>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="question" id="q3">
+        <h3>3. Mes proches disent que je suis :</h3>
+        <button onclick="nextQuestion(7)">Toujours partant pour s'amuser</button>
+        <button onclick="nextQuestion(1)">Très organisé et sérieux</button>
+        <button onclick="nextQuestion(4)">Original et différent des autres</button>
+      </div>
+
+      <!-- Question 4 -->
+      <div class="question" id="q4">
+        <h3>4. Au travail, je suis plutôt :</h3>
+        <button onclick="nextQuestion(5)">Celui qui sait comment tout fonctionne</button>
+        <button onclick="nextQuestion(2)">Celui qui soutient tout le monde</button>
+        <button onclick="nextQuestion(3)">Celui qui motive l'équipe</button>
+      </div>
+
+      <!-- Question 5 -->
+      <div class="question" id="q5">
+        <h3>5. Ce que je supporte mal :</h3>
+        <button onclick="nextQuestion(1)">Quand les choses sont mal faites</button>
+        <button onclick="nextQuestion(8)">Qu'on me dise ce que je dois faire</button>
+        <button onclick="nextQuestion(6)">Quand je ne suis pas préparé</button>
+      </div>
+    </div>
+
+    <div id="result">
+      <h2>Votre animal de personnalité est...</h2>
+      <div class="animal" id="animal-img"></div>
+      <h2 id="animal-name"></h2>
+      <div class="traits">
+        <p id="animal-desc"></p>
+      </div>
+      <button onclick="location.reload()">Refaire le test</button>
+    </div>
+  </div>
+
+  <script>
+    let answers = [];
+    let currentQuestion = 1;
+    const totalQuestions = 5; // Réduit à 5 questions pour l'exemple
+
+    function updateProgress() {
+      const progress = (currentQuestion-1) / totalQuestions * 100;
+      document.getElementById("progress-bar").style.width = `${progress}%`;
+    }
+
+    function nextQuestion(type) {
+      answers.push(type);
+      currentQuestion++;
+      updateProgress();
+      
+      if (currentQuestion <= totalQuestions) {
+        document.querySelector('.question.active').classList.remove('active');
+        document.getElementById(`q${currentQuestion}`).classList.add('active');
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById('quiz').style.display = 'none';
+      
+      // Calculer le type dominant
+      const typeCounts = {};
+      answers.forEach(type => {
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+      });
+
+      let maxType = 1;
+      for (const type in typeCounts) {
+        if (typeCounts[type] > (typeCounts[maxType] || 0)) maxType = type;
+      }
+
+      // Associer les types aux animaux (SEULEMENT les animaux !)
+      const animals = {
+        1: { emoji: "🐜", name: "La Fourmi", desc: "Organisée et travailleuse, vous aimez que tout soit bien fait." },
+        2: { emoji: "🐕", name: "Le Chien", desc: "Fidèle et attentionné, vous prenez soin des autres." },
+        3: { emoji: "🦚", name: "Le Paon", desc: "Élégant et ambitieux, vous aimez montrer vos talents." },
+        4: { emoji: "🐺", name: "Le Loup", desc: "Indépendant et intuitif, vous marchez à votre rythme." },
+        5: { emoji: "🦉", name: "Le Hibou", desc: "Sage et observateur, vous analysez avant d'agir." },
+        6: { emoji: "🦫", name: "Le Castor", desc: "Prudent et travailleur, vous préparez tout à l'avance." },
+        7: { emoji: "🐒", name: "Le Singe", desc: "Joueur et malin, vous trouvez des solutions originales." },
+        8: { emoji: "🦁", name: "Le Lion", desc: "Courageux et leader, vous protégez votre entourage." },
+        9: { emoji: "🐬", name: "Le Dauphin", desc: "Sociable et joyeux, vous créez l'harmonie." }
+      };
+
+      const result = animals[maxType];
+      document.getElementById("animal-img").textContent = result.emoji;
+      document.getElementById("animal-name").textContent = result.name;
+      document.getElementById("animal-desc").textContent = result.desc;
+      
+      document.getElementById("result").style.display = "block";
+      document.getElementById("progress").style.display = "none";
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>
